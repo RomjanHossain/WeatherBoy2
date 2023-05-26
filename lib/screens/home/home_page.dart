@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weatherboy2/screens/forcasts/forcast.dart';
 import 'package:weatherboy2/screens/home/components/card_home.dart';
 import 'package:weatherboy2/screens/home/widgets/cloud_over_text.dart';
 import 'package:weatherboy2/utils/consts_.dart';
@@ -141,7 +142,15 @@ class HomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Other Cities'),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
+                IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SevenDayForcast(),
+                          ));
+                    },
+                    icon: const Icon(Icons.add)),
               ],
             ),
           ),
