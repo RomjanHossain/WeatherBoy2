@@ -27,9 +27,13 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'WeatherBoy 2 Demo',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.deepOrange,
+            brightness: Brightness.dark,
+          ),
           useMaterial3: true,
         ),
+        themeMode: ThemeMode.dark,
         home: const HomePage(),
       ),
     );

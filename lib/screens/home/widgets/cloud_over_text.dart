@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:weatherboy2/blocs/current_weather_bloc/bloc/current_weather_bloc.dart';
+import 'package:weatherboy2/screens/home/components/gethe_image.dart';
+import 'package:weatherboy2/utils/consts_.dart';
 
 class CloudOverText extends StatelessWidget {
   const CloudOverText({
@@ -15,20 +19,36 @@ class CloudOverText extends StatelessWidget {
           child: Container(
             alignment: Alignment.bottomCenter,
             height: 150,
-            child: Image.asset(
-              'assets/images/Night.png',
-              fit: BoxFit.fitHeight,
+            child: BlocBuilder<CurrentWeatherBloc, CurrentWeatherState>(
+              builder: (context, state) {
+                if (state is CurrentWeatherLoaded) {
+                  return Image.asset(
+                    'assets/images/${getTheimageUrl(state.currentWeatherModel.weather.first.id)}.png',
+                    fit: BoxFit.fitHeight,
+                  );
+                }
+                return Image.asset(
+                  'assets/images/Cloud.png',
+                  fit: BoxFit.fitHeight,
+                );
+              },
             ),
           ),
         ),
         Center(
-          child: Text(
-            '23°',
-            style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                  fontSize: 150,
-                  fontWeight: FontWeight.w600,
-                  // color: Colors.white,
-                ),
+          child: BlocBuilder<CurrentWeatherBloc, CurrentWeatherState>(
+            builder: (context, state) {
+              return Text(
+                state is CurrentWeatherLoaded
+                    ? '${kelvinToCelcius(state.currentWeatherModel.main.temp).toStringAsFixed(0)}°'
+                    : '23°',
+                style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                      fontSize: 150,
+                      fontWeight: FontWeight.w600,
+                      // color: Colors.white,
+                    ),
+              );
+            },
           ),
         ),
         // asdfs

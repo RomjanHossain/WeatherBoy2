@@ -13,25 +13,22 @@ class CurrentWeatherBloc
   CurrentWeatherBloc() : super(CurrentWeatherInitial()) {
     // on<CurrentWeatherEvent>((event, emit) {});
     on<RefresshCurrentWeather>(
-      (event, emit) {
-        // emit(CurrentWeatherLoading());
-        // weatherRepo
-        //     .getCurrentWeather(event.lat, event.lon)
-        //     .then((currentWeatherModel) {
-        //   emit(CurrentWeatherLoaded(
-        //       currentWeatherModel: currentWeatherModel));
-        // }).catchError((e) {
-        //   emit(CurrentWeatherError(message: e.toString()));
-        // });
-      },
+      (event, emit) {},
     );
     on<GetCurrentWeather>(
-      (event, emit) {
-        weatherRepo
+      (event, emit) async {
+        print('get curretn weather called');
+        await weatherRepo
             .getCurrentWeatherData(event.lat, event.lon)
             .then((CurrentWeatherModel currentWeatherModel) {
-          emit(CurrentWeatherLoaded(currentWeatherModel: currentWeatherModel));
+          print('emmiting current weather model: $currentWeatherModel');
+          emit(
+            CurrentWeatherLoaded(
+              currentWeatherModel: currentWeatherModel,
+            ),
+          );
         }).catchError((e) {
+          print('error: $e');
           emit(CurrentWeatherError(message: e.toString()));
         });
       },
