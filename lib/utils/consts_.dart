@@ -14,6 +14,32 @@ const List<String> days = <String>[
   'Sunday',
 ];
 
+const List<String> weatherStatusWithImage = <String>[
+  'Cloud',
+  'Crescent Moon',
+  'Light',
+  'Lightning Rain',
+  'Lightning',
+  'Night Rain',
+  'Night Snow',
+  'Night Thunderstorm',
+  'Night',
+  'Rain Snow Water',
+  'Rain Water',
+  'Rain',
+  'Snow Wind',
+  'Snow',
+  'Snowfall',
+  'Stars',
+  'Sun',
+  'Sunny Cloudy',
+  'Sunny Lightning',
+  'Sunny Rain',
+  'Sunny Snow',
+  'Sunny Windy',
+  'Wind',
+  'Windy',
+];
 const List<String> weatherStatus = <String>[
   'Sunny',
   'Smoky',
