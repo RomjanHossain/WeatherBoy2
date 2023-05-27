@@ -97,5 +97,5 @@ List<String> getTheLottieAnimateUrl(int code) {
     lottieUrl.add('assets/lottie/rain-slow.json');
     lottieUrl.add('assets/lottie/rain-fast.json');
   }
-  return lottieUrl;
+  return lottieUrl.isEmpty ? ['assets/lottie/clouds.json'] : lottieUrl;
 }

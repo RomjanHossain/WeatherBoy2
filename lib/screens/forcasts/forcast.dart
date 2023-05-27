@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:weatherboy2/blocs/days_n_hours_bloc/bloc/days_n_hour_bloc.dart';
+import 'package:weatherboy2/data/provider/db_provider.dart';
 import 'package:weatherboy2/screens/home/components/card_home.dart';
 import 'package:weatherboy2/screens/home/components/gethe_image.dart';
 import 'package:weatherboy2/utils/consts_.dart';
@@ -26,13 +28,10 @@ class SevenDayForcast extends StatelessWidget {
         actions: [
           IconButton(
               onPressed: () async {
-                // String _h = String.fromEnvironment('JAVA_HOME');
-                // print(_h);
-                /// testing the api
-                // final _api = APIProvider();
-                // final CurrentWeatherModel _data =
-                //     await _api.getCurrentWeather(40.7128, -74.0060);
-                // print(_data);
+                DBProvider dbProvider = DBProvider();
+                // await dbProvider.setCoord(0, 0);
+                var _coord = await dbProvider.getCoord();
+                print('coord from DB: ${_coord?.lon}');
               },
               icon: const Icon(Icons.menu)),
         ],
@@ -42,108 +41,123 @@ class SevenDayForcast extends StatelessWidget {
           return ListView(
             children: [
               /// Tomorrow's card
-              Card(
-                margin: const EdgeInsets.all(20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Column(
-                  children: [
-                    height20(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              Stack(
+                children: [
+                  Card(
+                    margin: const EdgeInsets.all(20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Column(
                       children: [
-                        Stack(
+                        height20(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (state is DaysnHoursWeatherLoaded)
-                              Image.asset(
-                                'assets/images/${getTheimageUrl(state.daysnHoursMode.list.first.weather.first.id)}.png',
-                                height: 150,
-                              )
-                            else
-                              Image.asset(
-                                'assets/images/Sun.png',
-                                height: 150,
-                              ),
-                            // Text(
-                            //   'HOla',
-                            //   style: Theme.of(context).textTheme.displayLarge,
-                            // ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: RichText(
-                                text: TextSpan(
-                                  text: state is DaysnHoursWeatherLoaded
-                                      ? '${kelvinToCelcius(state.daysnHoursMode.list.first.main.temp).toStringAsFixed(0)}°'
-                                      : '22°',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .displayLarge!
-                                      .copyWith(
-                                        fontSize: 70,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                  children: [
-                                    TextSpan(
+                            Stack(
+                              children: [
+                                if (state is DaysnHoursWeatherLoaded)
+                                  Image.asset(
+                                    'assets/images/${getTheimageUrl(state.daysnHoursMode.list.first.weather.first.id)}.png',
+                                    height: 150,
+                                  )
+                                else
+                                  Image.asset(
+                                    'assets/images/Sun.png',
+                                    height: 150,
+                                  ),
+                                // Text(
+                                //   'HOla',
+                                //   style: Theme.of(context).textTheme.displayLarge,
+                                // ),
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: RichText(
+                                    text: TextSpan(
                                       text: state is DaysnHoursWeatherLoaded
-                                          ? '/${kelvinToCelcius(state.daysnHoursMode.list.first.main.minTemp).toStringAsFixed(0)}°'
-                                          : '/22°',
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
+                                          ? '${kelvinToCelcius(state.daysnHoursMode.list.first.main.temp).toStringAsFixed(0)}°'
+                                          : '22°',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .displayLarge!
+                                          .copyWith(
+                                            fontSize: 70,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                      children: [
+                                        TextSpan(
+                                          text: state is DaysnHoursWeatherLoaded
+                                              ? '/${kelvinToCelcius(state.daysnHoursMode.list.first.main.minTemp).toStringAsFixed(0)}°'
+                                              : '/22°',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge,
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
                                 ),
+                              ],
+                            ),
+                            width20(),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Tomorrow'),
+                                  Text('Mostly Sunny'),
+                                ],
                               ),
                             ),
                           ],
                         ),
-                        width20(),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Tomorrow'),
-                              Text('Mostly Sunny'),
-                            ],
-                          ),
+                        height20(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            CardHome(
+                              icon: Icon(Icons.wb_sunny),
+                              subTitle: 'Pressure',
+                              title: state is DaysnHoursWeatherLoaded
+                                  ? '${state.daysnHoursMode.list.first.main.pressure}'
+                                  : '22%',
+                            ),
+                            CardHome(
+                              icon: Icon(Icons.wb_twighlight),
+                              subTitle: 'humidity',
+                              title: state is DaysnHoursWeatherLoaded
+                                  ? '${state.daysnHoursMode.list.first.main.humidity}%'
+                                  : '22%',
+                            ),
+                            CardHome(
+                              icon: Icon(Icons.wind_power),
+                              subTitle: 'windspeed',
+                              // title: '9km/h',
+                              title: state is DaysnHoursWeatherLoaded
+                                  ? '${state.daysnHoursMode.list.first.wind.speed.toStringAsFixed(2)}km/h'
+                                  : '22km/h',
+                            ),
+                          ],
                         ),
+                        height20(),
+                        height10(),
                       ],
                     ),
-                    height20(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        CardHome(
-                          icon: Icon(Icons.wb_sunny),
-                          subTitle: 'Pressure',
-                          title: state is DaysnHoursWeatherLoaded
-                              ? '${state.daysnHoursMode.list.first.main.pressure}'
-                              : '22%',
+                  ),
+                  if (state is DaysnHoursWeatherLoaded)
+                    for (String x in getTheLottieAnimateUrl(
+                        state.daysnHoursMode.list.first.weather.first.id))
+                      Align(
+                        alignment: Alignment.center,
+                        child: LottieBuilder.asset(
+                          x,
+                          height: 300,
                         ),
-                        CardHome(
-                          icon: Icon(Icons.wb_twighlight),
-                          subTitle: 'humidity',
-                          title: state is DaysnHoursWeatherLoaded
-                              ? '${state.daysnHoursMode.list.first.main.humidity}%'
-                              : '22%',
-                        ),
-                        CardHome(
-                          icon: Icon(Icons.wind_power),
-                          subTitle: 'windspeed',
-                          // title: '9km/h',
-                          title: state is DaysnHoursWeatherLoaded
-                              ? '${state.daysnHoursMode.list.first.wind.speed.toStringAsFixed(2)}km/h'
-                              : '22km/h',
-                        ),
-                      ],
-                    ),
-                    height20(),
-                    height10(),
-                  ],
-                ),
+                      ),
+                ],
               ),
 
               /// listview of nxt 6 days

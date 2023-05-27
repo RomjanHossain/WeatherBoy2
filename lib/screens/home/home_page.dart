@@ -279,12 +279,12 @@ class HomePage extends StatelessWidget {
                 ],
               ),
             ),
-            LottieBuilder.asset(
-              'assets/lottie/rain-fast.json',
-            ),
-            // LottieBuilder.asset(
-            //   'assets/lottie/thunder.json',
-            // ),
+            if (state is CurrentWeatherLoaded)
+              for (String x in getTheLottieAnimateUrl(
+                  state.currentWeatherModel.weather.first.id))
+                LottieBuilder.asset(
+                  x,
+                ),
           ],
         );
       },
