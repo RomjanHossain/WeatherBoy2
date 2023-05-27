@@ -8,9 +8,7 @@ part of 'current_weather_model.dart';
 
 CurrentWeatherModel _$CurrentWeatherModelFromJson(Map<String, dynamic> json) =>
     CurrentWeatherModel(
-      coord: (json['coord'] as Map<String, dynamic>).map(
-        (k, e) => MapEntry(k, (e as num).toDouble()),
-      ),
+      coord: Coord.fromJson(json['coord'] as Map<String, dynamic>),
       weather: (json['weather'] as List<dynamic>)
           .map((e) => Weather.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -30,7 +28,7 @@ CurrentWeatherModel _$CurrentWeatherModelFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$CurrentWeatherModelToJson(
         CurrentWeatherModel instance) =>
     <String, dynamic>{
-      'coord': instance.coord,
+      'coord': instance.coord.toJson(),
       'weather': instance.weather.map((e) => e.toJson()).toList(),
       'base': instance.base,
       'main': instance.main.toJson(),

@@ -1,3 +1,5 @@
+import 'package:weatherboy2/models/coord_model.dart';
+
 import 'clouds_model.dart';
 import 'main_model.dart';
 import 'sys_model.dart';
@@ -11,7 +13,7 @@ part 'current_weather_model.g.dart';
 @JsonSerializable(explicitToJson: true)
 class CurrentWeatherModel {
   /// [Longitude of the location && Latitude of the location]
-  final Map<String, double> coord;
+  final Coord coord;
 
   /// [Weather condition codes]
   final List<Weather> weather;
