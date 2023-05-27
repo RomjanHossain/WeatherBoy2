@@ -1,30 +1,44 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:weatherboy2/models/current_weather_model.dart';
+import 'package:weatherboy2/models/days_hour_list_model.dart';
 import 'package:weatherboy2/models/days_hours_model.dart';
 
 /// This class is responsible for all the CURD operations for the DB
 class DBProvider {
   Database? db;
 
-  // Future open(String path){
-  //   return openDatabase(
-  //     path,
-  //     version: 1,
-  //     onCreate: (db, version) async {
-  //       await db.execute('''
-  //         CREATE TABLE IF NOT EXISTS users(
-  //           id INTEGER PRIMARY KEY AUTOINCREMENT,
-  //           name TEXT,
-  //           email TEXT,
-  //           password TEXT
-  //         )
-  //       ''');
-  //     },
-  //     onOpen: (db) async {
-  //       this.db = db;
-  //     }
-  //   );
-  // }
+  /// Initialize the DB and create the tables
+  /// if the tables are not present
+
+  Future<void> initDB() async {
+    db = await openDatabase(
+      'weather.db',
+      version: 1,
+      onCreate: (db, version) async {
+        // create the CurrentWeatherModel values in the DB
+        await db.execute('''
+          CREATE TABLE weather(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            coord TEXT,
+            weather TEXT,
+            base TEXT,
+            main TEXT,
+            visibility INTEGER,
+            wind TEXT,
+            clouds TEXT,
+            dt INTEGER,
+            sys TEXT,
+            timezone INTEGER,
+            id INTEGER,
+            name TEXT,
+            cod INTEGER
+          )
+          
+          ''');
+      },
+    );
+  }
+
   ///* Get the current weather from the DB
   Future<CurrentWeatherModel> getCurrentWeatherFromDB(
       double lat, double lon) async {
@@ -43,15 +57,27 @@ class DBProvider {
   ///* Update the current weather in the DB
   Future<void> updateCurrentWeatherInDB(
       CurrentWeatherModel currentWeatherModel) async {
-    await db!.update(
-      'weather',
-      currentWeatherModel.toJson(),
-      where: 'lat = ? AND lon = ?',
-      whereArgs: [
-        currentWeatherModel.coord.lat,
-        currentWeatherModel.coord.lon,
-      ],
-    );
+    /// check if the data is already present in the DB
+    /// if present then update the data
+    /// else insert the data
+
+    if (await isCurrentWeatherPresentInDB(
+      currentWeatherModel.coord.lat,
+      currentWeatherModel.coord.lon,
+    )) {
+      // await updateCurrentWeatherInDB(currentWeatherModel);
+      await db!.update(
+        'weather',
+        currentWeatherModel.toJson(),
+        where: 'lat = ? AND lon = ?',
+        whereArgs: [
+          currentWeatherModel.coord.lat,
+          currentWeatherModel.coord.lon,
+        ],
+      );
+    } else {
+      await insertCurrentWeatherInDB(currentWeatherModel);
+    }
   }
 
   ///* Insert the current weather in the DB
@@ -81,26 +107,44 @@ class DBProvider {
 
   ///* Update the days and hours weather in the DB
   Future<void> updateDaysnHoursWeatherInDB(
-      List<Map<String, dynamic>> daysnHoursWeatherModel) async {
-    await db!.update(
-      'daysnHours',
-      daysnHoursWeatherModel.first,
-      where: 'lat = ? AND lon = ?',
-      whereArgs: [
-        daysnHoursWeatherModel.first['lat'],
-        daysnHoursWeatherModel.first['lon'],
-      ],
-    );
+      List<DaysnHoursList> daysnHoursWeatherModel) async {
+    /// check if the data is already present in the DB
+    /// if present then update the data
+    /// else insert the data
+    // if (await isDaysnHoursWeatherPresentInDB(
+    //   daysnHoursWeatherModel.first.,
+    //   daysnHoursWeatherModel.first.lon,
+    // )) {
+    /// update all the data
+    for (var i = 0; i < daysnHoursWeatherModel.length; i++) {
+      await db!.update(
+        'daysnHours',
+        daysnHoursWeatherModel[i].toJson(),
+      );
+    }
   }
+  // else {
+  //   for (var i = 0; i < daysnHoursWeatherModel.length; i++) {
+  //     await insertDaysnHoursWeatherInDB(daysnHoursWeatherModel[i]);
+  //   }
+  //   // await insertDaysnHoursWeatherInDB(daysnHoursWeatherModel.first.toJson());
+  // }
 
   ///* Insert the days and hours weather in the DB
   Future<void> insertDaysnHoursWeatherInDB(
-      List<Map<String, dynamic>> daysnHoursWeatherModel) async {
-    await db!.insert(
-      'daysnHours',
-      daysnHoursWeatherModel.first,
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+      List<DaysnHoursList> daysnHoursWeatherModel) async {
+    // await db!.insert(
+    //   'daysnHours',
+    //   daysnHoursWeatherModel.toJson(),
+    //   conflictAlgorithm: ConflictAlgorithm.replace,
+    // );
+    for (var i = 0; i < daysnHoursWeatherModel.length; i++) {
+      await db!.insert(
+        'daysnHours',
+        daysnHoursWeatherModel[i].toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
   }
 
   ///* Save the coordinates in the DB
@@ -136,5 +180,38 @@ class DBProvider {
         'lon': lon,
       },
     );
+  }
+
+  ///* check if the current weather is present in the DB
+  Future<bool> isCurrentWeatherPresentInDB(double lat, double lon) async {
+    final List<Map<String, dynamic>> maps = await db!.query(
+      'weather',
+      where: 'lat = ? AND lon = ?',
+      whereArgs: [lat, lon],
+    );
+    if (maps.isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  ///* check if the days and hours weather is present in the DB
+  // Future<bool> isDaysnHoursWeatherPresentInDB(double lat, double lon) async {
+  //   final List<Map<String, dynamic>> maps = await db!.query(
+  //     'daysnHours',
+  //     where: 'lat = ? AND lon = ?',
+  //     whereArgs: [lat, lon],
+  //   );
+  //   if (maps.isNotEmpty) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
+
+  ///* close the DB
+  Future<void> closeDB() async {
+    await db!.close();
   }
 }
