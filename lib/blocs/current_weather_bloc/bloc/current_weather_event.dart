@@ -10,12 +10,12 @@ class GetCurrentWeather extends CurrentWeatherEvent {
   GetCurrentWeather({required this.lat, required this.lon});
 }
 
-class GetDaysnHoursWeather extends CurrentWeatherEvent {
-  final double lat;
-  final double lon;
+// class GetDaysnHoursWeather extends CurrentWeatherEvent {
+//   final double lat;
+//   final double lon;
 
-  GetDaysnHoursWeather({required this.lat, required this.lon});
-}
+//   GetDaysnHoursWeather({required this.lat, required this.lon});
+// }
 
 class RefresshCurrentWeather extends CurrentWeatherEvent {
   final double lat;

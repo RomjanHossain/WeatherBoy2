@@ -7,7 +7,7 @@ part of 'rain_model.dart';
 // **************************************************************************
 
 Rain _$RainFromJson(Map<String, dynamic> json) => Rain(
-      h3: (json['h3'] as num).toDouble(),
+      h3: (json['h3'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$RainToJson(Rain instance) => <String, dynamic>{

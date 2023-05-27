@@ -30,12 +30,12 @@ class WeatherRepo {
 
       /// save the data in the DB
       // await dbProvider.updateCurrentWeatherInDB(_currentData);
-      print('returring fake data');
+      // print('returring fake data');
       return fakeData;
     } else {
       CurrentWeatherModel currentWeatherModel =
           await apiProvider.getCurrentWeather(lat, lon);
-      print('returring api data');
+      // print('returring api data');
       // await dbProvider.insertCurrentWeatherInDB(currentWeatherModel);
       return currentWeatherModel;
     }
@@ -52,14 +52,17 @@ class WeatherRepo {
 
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
+      // print('connectivity is none');
       DaysnHoursMode _currentData = await apiProvider.getDaysnHours(lat, lon);
 
       /// save the data in the DB
       // await dbProvider.updateDaysnHoursWeatherInDB(_currentData.list);
       return _currentData;
     } else {
+      // print('connectivity is not none');
       DaysnHoursMode currentWeatherModel =
           await apiProvider.getDaysnHours(lat, lon);
+      // print('returring days n hour api data $currentWeatherModel');
       // await dbProvider.insertDaysnHoursWeatherInDB(currentWeatherModel.list);
       return currentWeatherModel;
     }

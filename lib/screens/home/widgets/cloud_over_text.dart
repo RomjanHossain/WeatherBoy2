@@ -28,7 +28,7 @@ class CloudOverText extends StatelessWidget {
                   );
                 }
                 return Image.asset(
-                  'assets/images/Cloud.png',
+                  'assets/images/Sun.png',
                   fit: BoxFit.fitHeight,
                 );
               },

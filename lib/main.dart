@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weatherboy2/blocs/current_weather_bloc/bloc/current_weather_bloc.dart';
+import 'package:weatherboy2/blocs/days_n_hours_bloc/bloc/days_n_hour_bloc.dart';
 import 'package:weatherboy2/screens/home/home_page.dart';
 
 void main() {
@@ -22,6 +23,14 @@ class MyApp extends StatelessWidget {
               GetCurrentWeather(lat: 28.7041, lon: 77.1025),
             ),
         ),
+        BlocProvider<DaysNHourBloc>(
+          create: (context) => DaysNHourBloc()
+            ..add(
+              // GetCurrentWeather(lat: 28.7041, lon: 77.1025),
+              GetDaysnHoursWeatherEvent(lat: 28.7041, lon: 77.1025),
+            ),
+        ),
+        // DaysNHourBloc
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

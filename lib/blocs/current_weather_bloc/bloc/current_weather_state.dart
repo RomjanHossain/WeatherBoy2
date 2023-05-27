@@ -13,11 +13,11 @@ class CurrentWeatherLoaded extends CurrentWeatherState {
   CurrentWeatherLoaded({required this.currentWeatherModel});
 }
 
-class DaysnHoursWeatherLoaded extends CurrentWeatherState {
-  final DaysnHoursMode daysnHoursMode;
+// class DaysnHoursWeatherLoaded extends CurrentWeatherState {
+//   final DaysnHoursMode daysnHoursMode;
 
-  DaysnHoursWeatherLoaded({required this.daysnHoursMode});
-}
+//   DaysnHoursWeatherLoaded({required this.daysnHoursMode});
+// }
 
 class CurrentWeatherError extends CurrentWeatherState {
   final String message;

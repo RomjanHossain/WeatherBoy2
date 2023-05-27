@@ -4,7 +4,7 @@ part 'rain_model.g.dart';
 
 @JsonSerializable()
 class Rain {
-  final double h3;
+  final double? h3;
 
   Rain({required this.h3});
 
