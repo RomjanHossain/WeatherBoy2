@@ -92,7 +92,7 @@ class HomePage extends StatelessWidget {
 
           /// todays cards
           SizedBox(
-            height: 130,
+            height: 150,
             // width: 200,
             child: ListView.builder(
               itemCount: 7,
@@ -116,8 +116,13 @@ class HomePage extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        height10(),
+
                         /// time
-                        Text('${i + 1}:00 PM'),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('${i + 1}:00 PM'),
+                        ),
 
                         /// icon
                         Image.asset(
@@ -127,6 +132,7 @@ class HomePage extends StatelessWidget {
 
                         /// temp
                         const Text('20°C'),
+                        height10(),
                       ],
                     ),
                   ),
@@ -143,14 +149,18 @@ class HomePage extends StatelessWidget {
               children: [
                 const Text('Other Cities'),
                 IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SevenDayForcast(),
-                          ));
-                    },
-                    icon: const Icon(Icons.add)),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SevenDayForcast(),
+                        ));
+                  },
+                  icon: const Hero(
+                    tag: 'back',
+                    child: Icon(Icons.add),
+                  ),
+                ),
               ],
             ),
           ),

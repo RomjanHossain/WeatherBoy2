@@ -10,9 +10,28 @@ class SevenDayForcast extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('7 Days'),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Hero(
+            tag: 'back',
+            child: Icon(Icons.arrow_back),
+          ),
+        ),
         centerTitle: true,
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
+          IconButton(
+              onPressed: () async {
+                // String _h = String.fromEnvironment('JAVA_HOME');
+                // print(_h);
+                /// testing the api
+                // final _api = APIProvider();
+                // final CurrentWeatherModel _data =
+                //     await _api.getCurrentWeather(40.7128, -74.0060);
+                // print(_data);
+              },
+              icon: const Icon(Icons.menu)),
         ],
       ),
       body: ListView(
@@ -65,8 +84,8 @@ class SevenDayForcast extends StatelessWidget {
                       ],
                     ),
                     width20(),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -78,7 +97,7 @@ class SevenDayForcast extends StatelessWidget {
                   ],
                 ),
                 height20(),
-                Row(
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     CardHome(
@@ -110,11 +129,14 @@ class SevenDayForcast extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (c, i) {
               return Card(
+                // margin: const EdgeInsets.all(8) ,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 40,
+                  padding: const EdgeInsets.all(8),
+                  margin: const EdgeInsets.all(8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     // crossAxisAlignment: CrossAxisAlignment.center,
@@ -129,13 +151,13 @@ class SevenDayForcast extends StatelessWidget {
                       ),
 
                       /// status txt
-                      Text('Mostly Sunny'),
+                      const Text('Mostly Sunny'),
 
                       /// temp 1
-                      Text('+30°'),
+                      const Text('+30°'),
 
                       /// temp 2
-                      Text('+15°'),
+                      const Text('+15°'),
                     ],
                   ),
                 ),
