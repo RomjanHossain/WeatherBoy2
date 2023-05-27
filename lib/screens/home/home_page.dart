@@ -19,12 +19,6 @@ class HomePage extends StatelessWidget {
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.refresh),
-            // color: Colors.red,
-            // focusColor: Colors.green,
-            // hoverColor: Colors.blue,
-            // splashColor: Colors.pink,
-            // disabledColor: Colors.deepOrange,
-            // highlightColor: Colors.cyanAccent,
           ),
           // // search
           // IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
