@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weatherboy2/blocs/current_weather_bloc/bloc/current_weather_bloc.dart';
 import 'package:weatherboy2/screens/home/components/gethe_image.dart';
@@ -25,7 +26,15 @@ class CloudOverText extends StatelessWidget {
                   return Image.asset(
                     'assets/images/${getTheimageUrl(state.currentWeatherModel.weather.first.id)}.png',
                     fit: BoxFit.fitHeight,
-                  );
+                  )
+                      .animate()
+                      .slideX(
+                        duration: 900.ms,
+                      )
+                      .then()
+                      .shakeX(
+                        delay: 100.ms,
+                      );
                 }
                 return Image.asset(
                   'assets/images/Sun.png',
@@ -47,7 +56,10 @@ class CloudOverText extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                       // color: Colors.white,
                     ),
-              );
+              ).animate().scale(
+                    delay: 900.ms,
+                    duration: 900.ms,
+                  );
             },
           ),
         ),

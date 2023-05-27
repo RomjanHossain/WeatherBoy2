@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:weatherboy2/blocs/days_n_hours_bloc/bloc/days_n_hour_bloc.dart';
@@ -146,7 +147,19 @@ class SevenDayForcast extends StatelessWidget {
                         height10(),
                       ],
                     ),
-                  ),
+                  )
+                      .animate(
+                        onPlay: (AnimationController controller) =>
+                            controller.repeat(),
+                      )
+                      .then(
+                        delay: 200.ms,
+                      )
+                      .shimmer(
+                        duration: 3000.ms,
+                        delay: 5000.ms,
+                        curve: Curves.easeInCubic,
+                      ),
                   if (state is DaysnHoursWeatherLoaded)
                     for (String x in getTheLottieAnimateUrl(
                         state.daysnHoursMode.list.first.weather.first.id))
@@ -208,7 +221,11 @@ class SevenDayForcast extends StatelessWidget {
                           ],
                         ),
                       ),
-                    );
+                    ).animate().slideX(
+                          duration: 1000.ms,
+                          // delay: 500.ms,
+                          curve: Curves.easeInOutCubic,
+                        );
                   },
                   itemCount: state.daysnHoursMode.list.length - 1,
                 ),

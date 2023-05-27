@@ -10,7 +10,7 @@ import 'package:weatherboy2/screens/home/components/card_home.dart';
 import 'package:weatherboy2/screens/home/components/gethe_image.dart';
 import 'package:weatherboy2/screens/home/widgets/cloud_over_text.dart';
 import 'package:weatherboy2/utils/consts_.dart';
-
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../blocs/current_weather_bloc/bloc/current_weather_bloc.dart';
 
 /// home page for the app
@@ -62,6 +62,18 @@ class HomePage extends StatelessWidget {
                             state.currentWeatherModel.weather.first.main,
                             style: Theme.of(context).textTheme.headlineLarge,
                           )
+                            .animate()
+                            .fade(
+                              duration: 200.ms,
+                            )
+                            .then()
+                            .scale(
+                              duration: 800.ms,
+                              curve: Curves.easeInOutCubic,
+                            )
+                            .shimmer(
+                              duration: 1000.ms,
+                            )
                         : const Text('Mostly Sunny'),
                   ),
 
@@ -71,7 +83,7 @@ class HomePage extends StatelessWidget {
 
                   /// date and time
                   const Text(
-                    'Sunday 10 February | 10:00 PM',
+                    'Sunday 28 May | 10:00 PM',
                     textAlign: TextAlign.center,
                   ),
 
@@ -92,21 +104,35 @@ class HomePage extends StatelessWidget {
                                 icon: Icon(Icons.wb_sunny),
                                 subTitle: 'percitipition',
                                 title: '10%',
-                              ),
+                              ).animate().slideX(
+                                    duration: 800.ms,
+                                    delay: 100.ms,
+                                    curve: Curves.easeInOutCubic,
+                                  ),
                               CardHome(
                                 icon: const Icon(Icons.wb_twighlight),
                                 subTitle: 'humidity',
                                 title: state is CurrentWeatherLoaded
                                     ? '${state.currentWeatherModel.main.humidity}%'
                                     : '10%',
-                              ),
+                              ).animate().slideY(
+                                    duration: 800.ms,
+                                    delay: 100.ms,
+                                    curve: Curves.easeInOutCubic,
+                                  ),
                               CardHome(
                                 icon: const Icon(Icons.wind_power),
                                 subTitle: 'windspeed',
                                 title: state is CurrentWeatherLoaded
                                     ? '${state.currentWeatherModel.wind.speed.toStringAsFixed(0)}km/h'
                                     : '9km/h',
-                              ),
+                              ).animate().slideX(
+                                    begin: 100,
+                                    end: 0,
+                                    duration: 800.ms,
+                                    delay: 100.ms,
+                                    curve: Curves.easeInOutCubic,
+                                  ),
                             ],
                           ),
                         ),
@@ -175,7 +201,13 @@ class HomePage extends StatelessWidget {
                                       ),
                                       height10(),
                                     ],
-                                  ),
+                                  ).animate().slideX(
+                                        begin: 100,
+                                        end: 0,
+                                        duration: 800.ms,
+                                        delay: 100.ms,
+                                        curve: Curves.easeInOutCubic,
+                                      ),
                                 ),
                               );
                             },
