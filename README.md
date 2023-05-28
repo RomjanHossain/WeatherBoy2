@@ -1,16 +1,13 @@
 # weatherboy2
 
-A new Flutter project.
+How to use:
 
-## Getting Started
+* goto the flutter project directory and run `flutter pub get`
+* then create a file in lib/utils/ directory called `env.dart`
+* in that file add the following code:
 
-This project is a starting point for a Flutter application.
+```String API_KEY = 'YOUR_API_KEY_HERE';```
 
-A few resources to get you started if this is your first Flutter project:
+* then run the app using `flutter run` command
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+That's it. Enjoy!
