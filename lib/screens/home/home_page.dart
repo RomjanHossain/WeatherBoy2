@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:weatherboy2/blocs/days_n_hours_bloc/bloc/days_n_hour_bloc.dart';
+import 'package:weatherboy2/cubits/conversion/cubit/unit_conversion_cubit.dart';
 import 'package:weatherboy2/data/provider/api_provider.dart';
+import 'package:weatherboy2/data/provider/current_loc_provider.dart';
 import 'package:weatherboy2/data/repository/weather_repo.dart';
 import 'package:weatherboy2/models/days_hours_model.dart';
 import 'package:weatherboy2/screens/forcasts/forcast.dart';
@@ -15,7 +18,9 @@ import '../../blocs/current_weather_bloc/bloc/current_weather_bloc.dart';
 
 /// home page for the app
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  HomePage({super.key});
+
+  final LocationProvider _locationProvider = LocationProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +39,10 @@ class HomePage extends StatelessWidget {
                   // refresh
                   IconButton(
                     onPressed: () async {
-                      // print('btn clicked');
-                      final WeatherRepo _weatherRepo = WeatherRepo();
-                      DaysnHoursMode _dd = await _weatherRepo.getDaysnHoursData(
-                        28.7041,
-                        77.1025,
-                      );
-                      // print(_dd);
+                      // print(DateTime.now());
+                      context
+                          .read<CurrentWeatherBloc>()
+                          .add(GetCurrentWeatherEvent());
                     },
                     icon: const Icon(Icons.refresh),
                   ),
@@ -82,8 +84,9 @@ class HomePage extends StatelessWidget {
                   height20(),
 
                   /// date and time
-                  const Text(
-                    'Sunday 28 May | 10:00 PM',
+                  Text(
+                    // 'Sunday 28 May | 10:00 PM',
+                    DateFormat('EEEE d MMM | HH:mm a').format(DateTime.now()),
                     textAlign: TextAlign.center,
                   ),
 
@@ -141,13 +144,22 @@ class HomePage extends StatelessWidget {
                   ),
 
                   ///today & 7 day forecast text
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('Today'),
-                        Text('7-Day Forecast'),
+                        TextButton(
+                          child: Text('7-Day Forecast'),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SevenDayForcast(),
+                                ));
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -164,7 +176,7 @@ class HomePage extends StatelessWidget {
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
-                              int i = index + 10;
+                              // int i = index + 10;
 
                               /// card for today
                               return Padding(
@@ -186,7 +198,9 @@ class HomePage extends StatelessWidget {
                                       /// time
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Text('${i + 1}:00 PM'),
+                                        child: Text(DateFormat("HH:mm a")
+                                            .format(DateTime.now().add(
+                                                Duration(hours: index + 1)))),
                                       ),
 
                                       /// icon
@@ -197,7 +211,7 @@ class HomePage extends StatelessWidget {
 
                                       /// temp
                                       Text(
-                                        '${kelvinToCelcius(state.daysnHoursMode.list[index].main.temp).toStringAsFixed(0)}°C',
+                                        '${context.watch<UnitConversionCubit>().state ? kelvinToCelcius(state.daysnHoursMode.list[index].main.temp).toStringAsFixed(0) : state.daysnHoursMode.list[index].main.temp}°${context.watch<UnitConversionCubit>().state ? 'C' : 'K'}',
                                       ),
                                       height10(),
                                     ],
@@ -231,20 +245,20 @@ class HomePage extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Other Cities'),
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SevenDayForcast(),
-                                ));
-                          },
-                          icon: const Hero(
-                            tag: 'back',
-                            child: Icon(Icons.add),
-                          ),
-                        ),
+                        const Text('Other Functions'),
+                        // IconButton(
+                        //   onPressed: () {
+                        //     Navigator.push(
+                        //         context,
+                        //         MaterialPageRoute(
+                        //           builder: (context) => const SevenDayForcast(),
+                        //         ));
+                        //   },
+                        //   icon: const Hero(
+                        //     tag: 'back',
+                        //     child: Icon(Icons.add),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -252,64 +266,100 @@ class HomePage extends StatelessWidget {
                   /// other cities
                   SizedBox(
                     height: 130,
-                    // width: double.infinity,
-                    child: ListView.builder(
-                      itemCount: 7,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
+                    // width: 390,
+                    child: ListView(
+                        // itemCount: 2,
+                        scrollDirection: Axis.horizontal,
+                        // itemBuilder: (context, index) {
                         /// card for other cities
-                        return Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 10,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              width20(),
-
-                              /// icon
-                              Image.asset(
-                                'assets/images/Cloud.png',
-                                height: 80,
+                        children: [
+                          SizedBox(
+                            width: 260,
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
                               ),
-                              width20(),
-
-                              /// Column (country & status)
-                              const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  /// country name
-                                  Text('New Zealand'),
-
-                                  /// status
-                                  Text('Sunny'),
-                                ],
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 10,
                               ),
-                              width20(),
-
-                              /// temp
-                              Text(
-                                '20°C',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .displaySmall!
-                                    .copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                              child: Center(
+                                child: TextButton(
+                                  onPressed: () {},
+                                  child: Text(
+                                    'Mannualy add city',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
                               ),
-                              width20(),
-                            ],
+                            ),
                           ),
-                        );
-                      },
-                    ),
+                          SizedBox(
+                            width: 260,
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 10,
+                              ),
+                              child: Center(
+                                child: TextButton(
+                                  onPressed: () {
+                                    context
+                                        .read<UnitConversionCubit>()
+                                        .toggle();
+                                  },
+                                  child: Text(
+                                    context.watch<UnitConversionCubit>().state
+                                        ? 'Celcius to Kelvin'
+                                        : 'Kelvin to Celcius',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ]),
                   ),
                 ],
               ),
+              bottomNavigationBar: FutureBuilder<bool>(
+                future: _locationProvider.checkLocationPermission(),
+                builder: (context, snapshot) {
+                  return snapshot.hasData
+                      ? snapshot.data!
+                          ? SizedBox.shrink()
+                          : BottomAppBar(
+                              color: Colors.red,
+                              shape: const CircularNotchedRectangle(),
+                              child: ListTile(
+                                title: Text('Location Permission denied'),
+                              ),
+                            )
+                      : SizedBox.shrink();
+                },
+              ),
+              floatingActionButton: FutureBuilder<bool>(
+                  future: _locationProvider.checkLocationPermission(),
+                  builder: (context, snapshot) {
+                    return snapshot.hasData
+                        ? snapshot.data != true
+                            ? FloatingActionButton.extended(
+                                onPressed: () async {
+                                  _locationProvider.checkLocationPermission();
+                                },
+                                label: Text('Ask Permission'))
+                            : SizedBox.shrink()
+                        : SizedBox.shrink();
+                  }),
             ),
             if (state is CurrentWeatherLoaded)
               for (String x in getTheLottieAnimateUrl(

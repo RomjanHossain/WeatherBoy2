@@ -3,11 +3,11 @@ part of 'current_weather_bloc.dart';
 @immutable
 abstract class CurrentWeatherEvent {}
 
-class GetCurrentWeather extends CurrentWeatherEvent {
-  final double lat;
-  final double lon;
+class GetCurrentWeatherEvent extends CurrentWeatherEvent {
+  final double? lat;
+  final double? lon;
 
-  GetCurrentWeather({required this.lat, required this.lon});
+  GetCurrentWeatherEvent({this.lat, this.lon});
 }
 
 // class GetDaysnHoursWeather extends CurrentWeatherEvent {
@@ -17,9 +17,9 @@ class GetCurrentWeather extends CurrentWeatherEvent {
 //   GetDaysnHoursWeather({required this.lat, required this.lon});
 // }
 
-class RefresshCurrentWeather extends CurrentWeatherEvent {
+class RefresshCurrentWeatherEvent extends CurrentWeatherEvent {
   final double lat;
   final double lon;
 
-  RefresshCurrentWeather({required this.lat, required this.lon});
+  RefresshCurrentWeatherEvent({required this.lat, required this.lon});
 }

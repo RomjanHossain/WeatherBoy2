@@ -4,10 +4,10 @@ part of 'days_n_hour_bloc.dart';
 abstract class DaysNHourEvent {}
 
 class GetDaysnHoursWeatherEvent extends DaysNHourEvent {
-  final double lat;
-  final double lon;
+  final double? lat;
+  final double? lon;
 
-  GetDaysnHoursWeatherEvent({required this.lat, required this.lon});
+  GetDaysnHoursWeatherEvent({this.lat, this.lon});
 }
 
 class RefresshCurrentWeatherEvent extends DaysNHourEvent {

@@ -12,10 +12,10 @@ class CurrentWeatherBloc
   final WeatherRepo weatherRepo = WeatherRepo();
   CurrentWeatherBloc() : super(CurrentWeatherInitial()) {
     // on<CurrentWeatherEvent>((event, emit) {});
-    on<RefresshCurrentWeather>(
+    on<RefresshCurrentWeatherEvent>(
       (event, emit) {},
     );
-    on<GetCurrentWeather>(
+    on<GetCurrentWeatherEvent>(
       (event, emit) async {
         // print('get curretn weather called');
         await weatherRepo

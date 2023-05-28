@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:weatherboy2/blocs/days_n_hours_bloc/bloc/days_n_hour_bloc.dart';
+import 'package:weatherboy2/cubits/conversion/cubit/unit_conversion_cubit.dart';
 import 'package:weatherboy2/data/provider/db_provider.dart';
 import 'package:weatherboy2/screens/home/components/card_home.dart';
 import 'package:weatherboy2/screens/home/components/gethe_image.dart';
@@ -26,16 +28,16 @@ class SevenDayForcast extends StatelessWidget {
           ),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-              onPressed: () async {
-                DBProvider dbProvider = DBProvider();
-                // await dbProvider.setCoord(0, 0);
-                var _coord = await dbProvider.getCoord();
-                print('coord from DB: ${_coord?.lon}');
-              },
-              icon: const Icon(Icons.menu)),
-        ],
+        // actions: [
+        //   IconButton(
+        //       onPressed: () async {
+        //         DBProvider dbProvider = DBProvider();
+        //         // await dbProvider.setCoord(0, 0);
+        //         var _coord = await dbProvider.getCoord();
+        //         // print('coord from DB: ${_coord?.lon}');
+        //       },
+        //       icon: const Icon(Icons.menu)),
+        // ],
       ),
       body: BlocBuilder<DaysNHourBloc, DaysNHourState>(
         builder: (context, state) {
@@ -78,8 +80,8 @@ class SevenDayForcast extends StatelessWidget {
                                   child: RichText(
                                     text: TextSpan(
                                       text: state is DaysnHoursWeatherLoaded
-                                          ? '${kelvinToCelcius(state.daysnHoursMode.list.first.main.temp).toStringAsFixed(0)}°'
-                                          : '22°',
+                                          ? '${context.watch<UnitConversionCubit>().state ? kelvinToCelcius(state.daysnHoursMode.list.first.main.temp).toStringAsFixed(0) : state.daysnHoursMode.list.first.main.temp}°'
+                                          : '0°',
                                       style: Theme.of(context)
                                           .textTheme
                                           .displayLarge!
@@ -90,8 +92,8 @@ class SevenDayForcast extends StatelessWidget {
                                       children: [
                                         TextSpan(
                                           text: state is DaysnHoursWeatherLoaded
-                                              ? '/${kelvinToCelcius(state.daysnHoursMode.list.first.main.minTemp).toStringAsFixed(0)}°'
-                                              : '/22°',
+                                              ? '/${context.watch<UnitConversionCubit>().state ? kelvinToCelcius(state.daysnHoursMode.list.first.main.minTemp).toStringAsFixed(0) : state.daysnHoursMode.list.first.main.minTemp.toString().split('.').first}°'
+                                              : '/0°',
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodyLarge,
@@ -193,7 +195,13 @@ class SevenDayForcast extends StatelessWidget {
                           // crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             /// day
-                            Text(days[i]),
+                            Text(
+                              DateFormat('EEEE').format(
+                                DateTime.now().add(
+                                  Duration(days: i + 1),
+                                ),
+                              ),
+                            ),
 
                             /// status
                             Image.asset(
@@ -211,11 +219,11 @@ class SevenDayForcast extends StatelessWidget {
 
                             /// temp 1
                             Text(
-                                '+${kelvinToCelcius(state.daysnHoursMode.list.first.main.maxTemp).toStringAsFixed(0)}°'),
+                                '+${context.watch<UnitConversionCubit>().state ? kelvinToCelcius(state.daysnHoursMode.list.first.main.maxTemp).toStringAsFixed(0) : state.daysnHoursMode.list.first.main.maxTemp.toString().split('.').first}°'),
 
                             /// temp 2
                             Text(
-                                '+${kelvinToCelcius(state.daysnHoursMode.list.first.main.minTemp).toStringAsFixed(0)}°'),
+                                '+${context.watch<UnitConversionCubit>().state ? kelvinToCelcius(state.daysnHoursMode.list.first.main.minTemp).toStringAsFixed(0) : state.daysnHoursMode.list.first.main.minTemp.toString().split('.').first}°'),
 
                             // const Text('+15°'),
                           ],

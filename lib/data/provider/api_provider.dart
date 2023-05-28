@@ -28,12 +28,12 @@ class APIProvider {
     final response = await http.get(Uri.parse(_url));
     if (response.statusCode == 200) {
       // print('response.body: ');
-      print(response.body.toString());
+      // print(response.body.toString());
       DaysnHoursMode _dh = DaysnHoursMode.fromJson(jsonDecode(response.body));
-      print('this is body -> $_dh');
+      // print('this is body -> $_dh');
       return _dh;
     } else {
-      print('error in getDaysnHours: ${response.statusCode}');
+      // print('error in getDaysnHours: ${response.statusCode}');
       throw Exception('Failed to load the 5 day / 3 Hour forecast');
     }
   }

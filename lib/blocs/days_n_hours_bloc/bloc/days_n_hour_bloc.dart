@@ -16,7 +16,7 @@ class DaysNHourBloc extends Bloc<DaysNHourEvent, DaysNHourState> {
       (event, emit) async {
         await weatherRepo.getDaysnHoursData(event.lat, event.lon).then(
           (DaysnHoursMode daysnHoursMode) {
-            print('emmiting days n hours model: $daysnHoursMode');
+            // print('emmiting days n hours model: $daysnHoursMode');
             emit(
               DaysnHoursWeatherLoaded(
                 daysnHoursMode: daysnHoursMode,
@@ -25,7 +25,7 @@ class DaysNHourBloc extends Bloc<DaysNHourEvent, DaysNHourState> {
           },
         ).catchError(
           (e) {
-            print('error in days n hours bloc: $e');
+            // print('error in days n hours bloc: $e');
             emit(
               DaysNHourError(
                 message: e.toString(),
