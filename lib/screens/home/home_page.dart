@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:weatherboy2/blocs/days_n_hours_bloc/bloc/days_n_hour_bloc.dart';
 import 'package:weatherboy2/cubits/conversion/cubit/unit_conversion_cubit.dart';
+import 'package:weatherboy2/cubits/header/cubit/header_cubit.dart';
+import 'package:weatherboy2/cubits/header/model/header_model.dart';
 import 'package:weatherboy2/data/provider/api_provider.dart';
 import 'package:weatherboy2/data/provider/current_loc_provider.dart';
 import 'package:weatherboy2/data/repository/weather_repo.dart';
@@ -11,6 +13,7 @@ import 'package:weatherboy2/models/days_hours_model.dart';
 import 'package:weatherboy2/screens/forcasts/forcast.dart';
 import 'package:weatherboy2/screens/home/components/card_home.dart';
 import 'package:weatherboy2/screens/home/components/gethe_image.dart';
+import 'package:weatherboy2/screens/home/widgets/bottom_sheet.dart';
 import 'package:weatherboy2/screens/home/widgets/cloud_over_text.dart';
 import 'package:weatherboy2/utils/consts_.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -27,6 +30,19 @@ class HomePage extends StatelessWidget {
     // print()
     return BlocBuilder<CurrentWeatherBloc, CurrentWeatherState>(
       builder: (context, state) {
+        if (state is CurrentWeatherLoaded) {
+          context.read<HeaderCubit>().updateHeader(HeaderModel(
+                status: state.currentWeatherModel.weather.first.main,
+                kelvin: state.currentWeatherModel.main.temp,
+                humidity: state.currentWeatherModel.main.humidity,
+                windSpeed:
+                    state.currentWeatherModel.wind.speed.toStringAsFixed(0),
+                pressure: state.currentWeatherModel.main.pressure,
+                title:
+                    DateFormat('EEEE d MMM | HH:mm a').format(DateTime.now()),
+                code: state.currentWeatherModel.weather.first.id,
+              ));
+        }
         return Stack(
           children: [
             Scaffold(
@@ -60,53 +76,110 @@ class HomePage extends StatelessWidget {
                   Center(
                     // child: Text(),
                     child: state is CurrentWeatherLoaded
-                        ? Text(
-                            state.currentWeatherModel.weather.first.main,
-                            style: Theme.of(context).textTheme.headlineLarge,
+                        ? BlocBuilder(
+                            bloc: context.read<HeaderCubit>(),
+                            builder: (context, state2) {
+                              if (state2 is HeaderLoadState) {
+                                return Text(
+                                  state2.headerModel.status,
+                                  style:
+                                      Theme.of(context).textTheme.headlineLarge,
+                                )
+                                    .animate()
+                                    .fade(
+                                      duration: 200.ms,
+                                    )
+                                    .then()
+                                    .scale(
+                                      duration: 800.ms,
+                                      curve: Curves.easeInOutCubic,
+                                    )
+                                    .shimmer(
+                                      duration: 1000.ms,
+                                    );
+                              } else {
+                                return Text(
+                                  state.currentWeatherModel.weather.first.main,
+                                  style:
+                                      Theme.of(context).textTheme.headlineLarge,
+                                )
+                                    .animate()
+                                    .fade(
+                                      duration: 200.ms,
+                                    )
+                                    .then()
+                                    .scale(
+                                      duration: 800.ms,
+                                      curve: Curves.easeInOutCubic,
+                                    )
+                                    .shimmer(
+                                      duration: 1000.ms,
+                                    );
+                              }
+                            },
                           )
-                            .animate()
-                            .fade(
-                              duration: 200.ms,
-                            )
-                            .then()
-                            .scale(
-                              duration: 800.ms,
-                              curve: Curves.easeInOutCubic,
-                            )
-                            .shimmer(
-                              duration: 1000.ms,
-                            )
                         : const Text('Mostly Sunny'),
                   ),
 
                   /// cloud over text
-                  const CloudOverText(),
+                  BlocBuilder<HeaderCubit, HeaderState>(
+                    builder: (context, state3) {
+                      if (state3 is HeaderLoadState) {
+                        return CloudOverText(
+                          id: state3.headerModel.code,
+                          temp: state3.headerModel.kelvin,
+                        );
+                      }
+                      return CloudOverText(
+                        id: state is CurrentWeatherLoaded
+                            ? state.currentWeatherModel.weather.first.id
+                            : 800,
+                        temp: state is CurrentWeatherLoaded
+                            ? state.currentWeatherModel.main.temp
+                            : 0,
+                      );
+                    },
+                  ),
                   height20(),
 
                   /// date and time
-                  Text(
-                    // 'Sunday 28 May | 10:00 PM',
-                    DateFormat('EEEE d MMM | HH:mm a').format(DateTime.now()),
-                    textAlign: TextAlign.center,
+                  BlocBuilder<HeaderCubit, HeaderState>(
+                    builder: (context, state4) {
+                      if (state4 is HeaderLoadState) {
+                        return Text(
+                          // 'Sunday 28 May | 10:00 PM',
+                          state4.headerModel.title,
+                          textAlign: TextAlign.center,
+                        );
+                      }
+                      return Text(
+                        // 'Sunday 28 May | 10:00 PM',
+                        DateFormat('EEEE d MMM | HH:mm a')
+                            .format(DateTime.now()),
+                        textAlign: TextAlign.center,
+                      );
+                    },
                   ),
 
                   /// simple card for temperature
-                  BlocBuilder<CurrentWeatherBloc, CurrentWeatherState>(
-                    builder: (context, state) {
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        margin: const EdgeInsets.all(8),
-                        child: Padding(
-                          padding: const EdgeInsets.all(15),
-                          child: Row(
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    margin: const EdgeInsets.all(8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: BlocBuilder<HeaderCubit, HeaderState>(
+                        builder: (context, state5) {
+                          return Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              const CardHome(
+                              CardHome(
                                 icon: Icon(Icons.wb_sunny),
-                                subTitle: 'percitipition',
-                                title: '10%',
+                                subTitle: 'Pressure',
+                                title: state is CurrentWeatherLoaded
+                                    ? '${state5 is HeaderLoadState ? state5.headerModel.pressure : state.currentWeatherModel.main.pressure}'
+                                    : '0',
                               ).animate().slideX(
                                     duration: 800.ms,
                                     delay: 100.ms,
@@ -116,8 +189,8 @@ class HomePage extends StatelessWidget {
                                 icon: const Icon(Icons.wb_twighlight),
                                 subTitle: 'humidity',
                                 title: state is CurrentWeatherLoaded
-                                    ? '${state.currentWeatherModel.main.humidity}%'
-                                    : '10%',
+                                    ? '${state5 is HeaderLoadState ? state5.headerModel.humidity : state.currentWeatherModel.main.humidity}%'
+                                    : '0%',
                               ).animate().slideY(
                                     duration: 800.ms,
                                     delay: 100.ms,
@@ -127,7 +200,7 @@ class HomePage extends StatelessWidget {
                                 icon: const Icon(Icons.wind_power),
                                 subTitle: 'windspeed',
                                 title: state is CurrentWeatherLoaded
-                                    ? '${state.currentWeatherModel.wind.speed.toStringAsFixed(0)}km/h'
+                                    ? '${state5 is HeaderLoadState ? state5.headerModel.windSpeed : state.currentWeatherModel.wind.speed.toStringAsFixed(0)}km/h'
                                     : '9km/h',
                               ).animate().slideX(
                                     begin: 100,
@@ -137,21 +210,21 @@ class HomePage extends StatelessWidget {
                                     curve: Curves.easeInOutCubic,
                                   ),
                             ],
-                          ),
-                        ),
-                      );
-                    },
+                          );
+                        },
+                      ),
+                    ),
                   ),
 
                   ///today & 7 day forecast text
                   Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Today'),
+                        const Text('Today'),
                         TextButton(
-                          child: Text('7-Day Forecast'),
+                          child: const Text('7-Day Forecast'),
                           onPressed: () {
                             Navigator.push(
                                 context,
@@ -177,51 +250,81 @@ class HomePage extends StatelessWidget {
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
                               // int i = index + 10;
+                              final _df = DateFormat("HH:mm a").format(
+                                  DateTime.now()
+                                      .add(Duration(hours: index + 1)));
+                              final _df2 = DateFormat("EEEE d MMM | HH:mm a")
+                                  .format(DateTime.now()
+                                      .add(Duration(hours: index + 1)));
 
                               /// card for today
                               return Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 8,
                                 ),
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
+                                child: InkWell(
+                                  onTap: () {
+                                    HeaderModel _hm = HeaderModel(
+                                      status: state.daysnHoursMode.list[index]
+                                          .weather.first.main,
+                                      kelvin: state
+                                          .daysnHoursMode.list[index].main.temp,
+                                      humidity: state.daysnHoursMode.list[index]
+                                          .main.humidity,
+                                      windSpeed: state
+                                          .daysnHoursMode.list[index].wind.speed
+                                          .toStringAsFixed(0),
+                                      pressure: state.daysnHoursMode.list[index]
+                                          .main.pressure,
+                                      title: _df2,
+                                      code: state.daysnHoursMode.list[index]
+                                          .weather.first.id,
+                                    );
+
+                                    /// update the HeaderModel
+                                    context
+                                        .read<HeaderCubit>()
+                                        .updateHeader(_hm);
+                                  },
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    margin: const EdgeInsets.symmetric(
+                                      vertical: 5,
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        height10(),
+
+                                        /// time
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(_df),
+                                        ),
+
+                                        /// icon
+                                        Image.asset(
+                                          'assets/images/${getTheimageUrl(state.daysnHoursMode.list[index].weather.first.id)}.png',
+                                          height: 50,
+                                        ),
+
+                                        /// temp
+                                        Text(
+                                          '${context.watch<UnitConversionCubit>().state ? kelvinToCelcius(state.daysnHoursMode.list[index].main.temp).toStringAsFixed(0) : state.daysnHoursMode.list[index].main.temp}°${context.watch<UnitConversionCubit>().state ? 'C' : 'K'}',
+                                        ),
+                                        height10(),
+                                      ],
+                                    ).animate().slideX(
+                                          begin: 100,
+                                          end: 0,
+                                          duration: 800.ms,
+                                          delay: 100.ms,
+                                          curve: Curves.easeInOutCubic,
+                                        ),
                                   ),
-                                  margin: const EdgeInsets.symmetric(
-                                    vertical: 5,
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      height10(),
-
-                                      /// time
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(DateFormat("HH:mm a")
-                                            .format(DateTime.now().add(
-                                                Duration(hours: index + 1)))),
-                                      ),
-
-                                      /// icon
-                                      Image.asset(
-                                        'assets/images/${getTheimageUrl(state.daysnHoursMode.list[index].weather.first.id)}.png',
-                                        height: 50,
-                                      ),
-
-                                      /// temp
-                                      Text(
-                                        '${context.watch<UnitConversionCubit>().state ? kelvinToCelcius(state.daysnHoursMode.list[index].main.temp).toStringAsFixed(0) : state.daysnHoursMode.list[index].main.temp}°${context.watch<UnitConversionCubit>().state ? 'C' : 'K'}',
-                                      ),
-                                      height10(),
-                                    ],
-                                  ).animate().slideX(
-                                        begin: 100,
-                                        end: 0,
-                                        duration: 800.ms,
-                                        delay: 100.ms,
-                                        curve: Curves.easeInOutCubic,
-                                      ),
                                 ),
                               );
                             },
@@ -232,20 +335,20 @@ class HomePage extends StatelessWidget {
                           );
                         }
                         // print(state);
-                        return Center(
+                        return const Center(
                           child: CircularProgressIndicator.adaptive(),
                         );
                       },
                     ),
                   ),
 
-                  ///today & 7 day forecast text
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  /// other function
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Other Functions'),
+                        Text('Other Functions'),
                         // IconButton(
                         //   onPressed: () {
                         //     Navigator.push(
@@ -289,7 +392,7 @@ class HomePage extends StatelessWidget {
                                     /// a bottom sheet to add city
                                     showModalBottomSheet(
                                       context: context,
-                                      builder: (context) => AddCity(),
+                                      builder: (context) => const AddCity(),
                                     );
                                   },
                                   child: Text(
@@ -342,15 +445,15 @@ class HomePage extends StatelessWidget {
                 builder: (context, snapshot) {
                   return snapshot.hasData
                       ? snapshot.data!
-                          ? SizedBox.shrink()
-                          : BottomAppBar(
+                          ? const SizedBox.shrink()
+                          : const BottomAppBar(
                               color: Colors.red,
-                              shape: const CircularNotchedRectangle(),
+                              shape: CircularNotchedRectangle(),
                               child: ListTile(
                                 title: Text('Location Permission denied'),
                               ),
                             )
-                      : SizedBox.shrink();
+                      : const SizedBox.shrink();
                 },
               ),
               floatingActionButton: FutureBuilder<bool>(
@@ -362,9 +465,9 @@ class HomePage extends StatelessWidget {
                                 onPressed: () async {
                                   _locationProvider.checkLocationPermission();
                                 },
-                                label: Text('Ask Permission'))
-                            : SizedBox.shrink()
-                        : SizedBox.shrink();
+                                label: const Text('Ask Permission'))
+                            : const SizedBox.shrink()
+                        : const SizedBox.shrink();
                   }),
             ),
             if (state is CurrentWeatherLoaded)
@@ -374,91 +477,6 @@ class HomePage extends StatelessWidget {
                   x,
                 ),
           ],
-        );
-      },
-    );
-  }
-}
-
-/// add city bottom sheet
-class AddCity extends StatefulWidget {
-  const AddCity({Key? key}) : super(key: key);
-
-  @override
-  State<AddCity> createState() => _AddCityState();
-}
-
-class _AddCityState extends State<AddCity> {
-  final TextEditingController _lonControllar = TextEditingController();
-  final TextEditingController _latControllar = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomSheet(
-      onClosing: () => Navigator.pop(context),
-      builder: (c) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Enter Latitude and Longitude',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-              ),
-              height20(),
-              height10(),
-              TextField(
-                controller: _latControllar,
-                decoration: InputDecoration(
-                  hintText: 'Enter Latitude',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
-              height20(),
-              TextField(
-                controller: _lonControllar,
-                decoration: InputDecoration(
-                  hintText: 'Enter Longitude',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
-              height10(),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  minimumSize: Size(200, 50),
-                  elevation: 3,
-                ),
-                onPressed: () {
-                  if (_latControllar.text.isNotEmpty &&
-                      _lonControllar.text.isNotEmpty) {
-                    // context.read<CurrentWeatherCubit>().getWeatherByLatLon(
-                    //       lat: double.parse(_latControllar.text),
-                    //       lon: double.parse(_lonControllar.text),
-                    //     );
-                    context
-                        .read<CurrentWeatherBloc>()
-                        .add(GetCurrentWeatherEvent(
-                          lat: double.parse(_latControllar.text),
-                          lon: double.parse(_lonControllar.text),
-                        ));
-                    Navigator.pop(context);
-                  }
-                  // Navigator.pop(context);
-                },
-                child: Text('Add City'),
-              ),
-            ],
-          ),
         );
       },
     );
