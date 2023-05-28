@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:weatherboy2/blocs/current_weather_bloc/bloc/current_weather_bloc.dart';
+import 'package:weatherboy2/blocs/days_n_hours_bloc/bloc/days_n_hour_bloc.dart';
+import 'package:weatherboy2/blocs/location_bloc/bloc/location_bloc.dart';
+import 'package:weatherboy2/cubits/conversion/cubit/unit_conversion_cubit.dart';
+import 'package:weatherboy2/cubits/header/cubit/header_cubit.dart';
 import 'package:weatherboy2/screens/home/home_page.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -11,29 +18,41 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CurrentWeatherBloc>(
+          create: (context) => CurrentWeatherBloc()
+            ..add(
+              GetCurrentWeatherEvent(),
+            ),
+        ),
+        BlocProvider<DaysNHourBloc>(
+          create: (context) => DaysNHourBloc()
+            ..add(
+              // GetCurrentWeather(lat: 28.7041, lon: 77.1025),
+              GetDaysnHoursWeatherEvent(),
+            ),
+        ),
+        BlocProvider<LocationBloc>(
+            create: (c) => LocationBloc()..add(LocationPermissionEvent())),
+        BlocProvider<UnitConversionCubit>(create: (c) => UnitConversionCubit()),
+        // HeaderCubit
+        BlocProvider<HeaderCubit>(create: (c) => HeaderCubit()),
+        // DaysNHourBloc
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'WeatherBoy 2 Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.deepOrange,
+            brightness: Brightness.dark,
+          ),
+          useMaterial3: true,
+        ),
+        themeMode: ThemeMode.dark,
+        home: HomePage(),
       ),
-      home: const HomePage(),
     );
   }
 }

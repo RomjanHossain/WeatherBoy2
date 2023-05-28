@@ -4,6 +4,9 @@ SizedBox width20() => const SizedBox(width: 20);
 SizedBox height20() => const SizedBox(height: 20);
 SizedBox height10() => const SizedBox(height: 10);
 
+/// covnert kelvin to celcius
+double kelvinToCelcius(double kelvin) => kelvin - 273.15;
+
 const List<String> days = <String>[
   'Monday',
   'Tuesday',
@@ -12,53 +15,4 @@ const List<String> days = <String>[
   'Friday',
   'Saturday',
   'Sunday',
-];
-
-const List<String> weatherStatus = <String>[
-  'Sunny',
-  'Smoky',
-  'Icy',
-  'Misty',
-  'Dewy',
-  'Frosty',
-  'Hot',
-  'Cold',
-  'Humid',
-  'Dry',
-  'Wet',
-  'Breezy',
-  'Gusty',
-  'Hurricane',
-  'Tornado',
-  'Thunderstorm',
-  'Lightning',
-  'Rainbow',
-  'Aurora',
-  'Hail',
-  'Sleet',
-  'Blizzard',
-  'Drizzle',
-  'Shower',
-  'Downpour',
-  'Monsoon',
-  'Typhoon',
-  'Whirlpool',
-  'Tsunami',
-  'Drought',
-  'Heatwave',
-  'Sandstorm',
-  'Solar',
-  'Eclipse',
-  'Meteor',
-  'Comet',
-  'Asteroid',
-  'Cloudy',
-  'Rainy',
-  'Snowy',
-  'Windy',
-  'Stormy',
-  'Foggy',
-  'Hazy',
-  'Dusty',
-  'Sandy',
 ];
